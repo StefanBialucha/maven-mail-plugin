@@ -1,0 +1,321 @@
+package org.codehaus.mojo.mail;
+
+/* 
+ * Copyright 2011 Markus W Mahlberg 
+ * 
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import javax.activation.DataSource;
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+
+import javax.mail.Authenticator;
+import javax.mail.BodyPart;
+import javax.mail.internet.AddressException; 
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.VelocityContext;
+/**
+ * Goal which sends a mail to recipients 
+ *
+ * @goal mail 
+ * @phase deploy 
+ */
+public class MailMojo 
+extends AbstractMojo
+{
+    // Sadly, one can't extend enums, so we have to wrap it ourselves
+    private enum RecipientType {
+      TO("To",Message.RecipientType.TO),
+      CC("CC",Message.RecipientType.CC),
+      BCC("BCC",Message.RecipientType.BCC);
+
+      private final String description_;
+      private final Message.RecipientType rectype_;
+
+      private RecipientType(String desc, Message.RecipientType rt) {
+        this.description_ = desc;
+        this.rectype_ = rt;
+      }
+
+      String getDescription() {
+        return this.description_;
+      }
+      
+      Message.RecipientType getType() {
+        return this.rectype_;
+      }
+  }
+  /** 
+  * @parameter expression="${project}" 
+  * @required 
+  * @readonly 
+  */ 
+  protected MavenProject mavenProject;
+
+  /**
+   * Sender 
+   * @parameter default-value="maven2@localhost"
+   * @required
+   */
+  private String from;
+
+  /**
+   * To-Adresses
+   * @parameter
+   * @required
+   */
+  private List recipients;
+
+  /**
+   * CC-Adresses
+   * @parameter
+   */
+  private List ccRecipients;
+
+  /**
+   * BCC-Adresses
+   * @parameter
+   */
+  private List bccRecipients;
+
+  /**
+   * Subject
+   * @parameter expression="${mail.subject}" default-value="${project.name} deployed"
+   */
+  private String subject;
+
+  /**
+   * Body
+   * @parameter expression="${mail.body}" default-value="${project.name} was successfully deployed"
+   * @required
+   */
+  private String body;
+
+  /**
+  * Attachements 
+  * @parameter 
+  */
+  private List attachements;
+
+  /**
+   * SMTP Host
+   * @parameter expression="${mail.smtp.host}" default-value="localhost"
+   * @required
+   */
+  private String smtphost;
+
+  private MimeMessage message;
+
+  public static Map<String, String> propertiesToMap(Properties props) {
+          HashMap<String, String> hm = new HashMap<String,String>();
+          Enumeration<Object> e = props.keys();
+          while (e.hasMoreElements()) {
+                  String s = (String)e.nextElement();
+                  hm.put(s, props.getProperty(s));
+          }
+          return hm;
+  }
+
+  private void addRecipients( List recipients , RecipientType rt ) 
+    throws MojoExecutionException
+    {
+
+      if ( recipients == null ) {
+        return;
+      } 
+
+      getLog().info(rt.getDescription() +": "+ recipients);
+      Iterator<String> iterator = recipients.iterator();
+
+      while ( iterator.hasNext() ){
+        try {
+          message.addRecipient( rt.getType() , new InternetAddress ( iterator.next() ) );
+          getLog().debug("Added "+rt.getType());
+        }
+        catch ( Exception e ) {
+          getLog().error("Could not set "+rt.getDescription()+"-Address!");
+          if ( e instanceof AddressException) {
+            throw new MojoExecutionException("Reason was an AddressException",e);
+          }
+          else if ( e instanceof MessagingException ) {
+            throw new MojoExecutionException("Reason was a MessagingException",e);
+          }
+          else {
+            throw new MojoExecutionException ("Unknown Reason",e);
+          }
+        }
+      }
+    }
+
+  private void addAttachements(MimeMultipart parent) 
+    throws MojoExecutionException {
+    Iterator<String> it = attachements.iterator();
+    DataSource src;
+    BodyPart msgPart;
+
+    while ( it.hasNext() ){
+      File attachement = new File( it.next() );
+
+      getLog().info("\t...\""+ attachement.getPath() +"\"");
+
+      /* Traversing directories is not yet implemented */
+      if ( attachement.isDirectory () ) {
+        throw new MojoExecutionException("Attachement can not be a directory (yet)");
+      }
+
+      msgPart = new MimeBodyPart();
+      src = new FileDataSource( attachement );
+      try {
+        msgPart.setDataHandler( new DataHandler(src) );
+        msgPart.setFileName( attachement.getName() );
+        msgPart.setHeader("Content-Type", src.getContentType());
+        msgPart.setHeader("Content-ID", attachement.getName());
+        msgPart.setDisposition(Part.ATTACHMENT);
+      }
+      catch (MessagingException e) {
+        getLog().error("Could not create attachement from file \""+attachement.getName() +"\"");
+        throw new MojoExecutionException("Cought MessagingException",e);
+      }
+      try {
+        parent.addBodyPart(msgPart);
+      }
+      catch (MessagingException e) {
+        getLog().error("Could not attach \""+attachement.getName() +"\" to message");
+        throw new MojoExecutionException("Cought MessagingException",e);
+      }
+    }
+  }
+
+  public void execute()
+    throws MojoExecutionException
+    {
+      Velocity.init();
+      VelocityContext context;
+      final Properties pProps = mavenProject.getProperties();
+      if ( pProps != null) {
+        context = new VelocityContext(propertiesToMap( pProps  )); 
+      }
+      else {
+        context = new VelocityContext();
+      }
+
+      Properties props = new Properties();
+      getLog().debug("Sending Mail via: "+smtphost);
+      props.put("mail.smtp.host",smtphost);
+      Session s = Session.getInstance(props,null);
+      message = new MimeMessage(s);
+
+      try {
+        message.setFrom( new InternetAddress(from) );
+      }
+      catch ( Exception e) {
+        // We should inform the user as cleanly as possible about the exception
+        getLog().error("Could not set " + from + " as FromAddress");
+
+        if (e instanceof AddressException) {
+          throw new MojoExecutionException( "Cought AddressException!",e);
+        }
+        else if (e instanceof MessagingException) {
+          throw new MojoExecutionException( "Cought MessagingException!",e);
+        }
+        else {
+          throw new MojoExecutionException( "Something is SERIOUSLY going wrong: ",e );
+        }
+      }
+
+      if (recipients == null){
+        throw new MojoExecutionException("There must be at last one recipient");
+      }
+
+      getLog().info("Preparing mail from " + from + " via " + smtphost);
+
+      this.addRecipients(recipients,RecipientType.TO);
+
+      if (  ccRecipients != null  ) {
+        this.addRecipients(ccRecipients,RecipientType.CC);
+      }
+
+      if (  bccRecipients !=null ) {
+        this.addRecipients(bccRecipients,RecipientType.BCC);
+      }
+
+      BodyPart msgBodyPart = new MimeBodyPart();
+      try {
+        msgBodyPart.setContent(body,"text/plain; charset=utf-8");
+        msgBodyPart.setDisposition(Part.INLINE);
+      }
+      catch (MessagingException e) {
+        getLog().error("Could not set body to \"" + body +"\"");
+        throw new MojoExecutionException("Cought MessagingException: ",e);
+      }
+
+      MimeMultipart multipart = new MimeMultipart();
+
+      try {
+        multipart.addBodyPart(msgBodyPart);
+      }
+      catch (MessagingException e) {
+        getLog().error("Could not attach body to MultipartMessage"); 
+        throw new MojoExecutionException("Cought MessagingException: ",e);
+      }
+      if ( attachements != null ) {
+        getLog().info("Attaching...");
+        this.addAttachements(multipart);
+      }
+      else {
+        getLog().info("No attachements");
+      }
+
+      try {
+        message.setSubject(subject,"UTF-8");
+        //message.setText(body,"UTF-8"); 
+        //message.setHeader("Content-Type", "text/plain; charset=UTF-8");
+        message.setHeader("Content-Transfer-Encoding", "8bit");
+        message.setContent(multipart);
+        getLog().info("Mail sucessfully sent");
+        Transport.send(message);
+      }
+      catch(MessagingException e) {
+        getLog().info("Cought MessagingException: "+ e.toString());
+        throw new MojoExecutionException( e.toString() );
+      }
+    }
+}

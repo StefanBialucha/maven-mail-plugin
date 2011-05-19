@@ -1,0 +1,28 @@
+<project>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>maven-mail-plugin</artifactId>
+        <configuration>
+          <smtphost>localhost</smtphost> 
+          <subject>Unittests</subject>
+          <recipients>
+            <recipient>a@localhost</recipient>
+            <recipient>b@localhost</recipient>
+          </recipients>
+          <ccRecipients>
+            <ccRecipient>c@localhost</ccRecipient>
+            <ccRecipient>d@localhost</ccRecipient>
+          </ccRecipients>
+          <bccRecipients>
+            <bccRecipient>e@localhost</bccRecipient>
+            <bccRecipient>f@localhost</bccRecipient>
+          </bccRecipients>
+          <from>maven@localhost</from>
+          <body>test</body>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
