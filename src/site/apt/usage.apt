@@ -43,7 +43,7 @@ implemented yet.
           <subject>Unittests</subject>
           <body>test</body>
 	  <attachments>
-	    <attachments>${basedir}/pom.xml</attachments>
+	    <attachment>${basedir}/pom.xml</attachment>
 	  </attachments>
         </configuration>
       </plugin>
