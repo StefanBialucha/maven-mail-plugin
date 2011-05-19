@@ -128,7 +128,7 @@ extends AbstractMojo
   * Attachements 
   * @parameter 
   */
-  private List attachements;
+  private List attachments;
 
   /**
    * SMTP Host
@@ -182,45 +182,45 @@ extends AbstractMojo
 
   private void addAttachements(MimeMultipart parent) 
     throws MojoExecutionException {
-    Iterator<String> it = attachements.iterator();
+    Iterator<String> it = attachments.iterator();
     DataSource src;
     BodyPart msgPart;
 
     while ( it.hasNext() ){
-      File attachement = new File( it.next() );
+      File attachment = new File( it.next() );
 
-      getLog().info("\t...\""+ attachement.getPath() +"\"");
+      getLog().info("\t...\""+ attachment.getPath() +"\"");
 
       /* Traversing directories is not yet implemented 
        * I strongly doubt that it should be, since this is most likely going to produce 
        * quite some mailtraffic
        */
 
-      if ( attachement.isDirectory () ) {
+      if ( attachment.isDirectory () ) {
         throw new MojoExecutionException("Attachement can not be a directory (yet)");
       }
 
       msgPart = new MimeBodyPart();
-      src = new FileDataSource( attachement );
+      src = new FileDataSource( attachment );
       try {
         msgPart.setDataHandler( new DataHandler(src) );
-        msgPart.setFileName( attachement.getName() );
+        msgPart.setFileName( attachment.getName() );
 
 	// Don't know whether using FileDataSource.getContentType() is really a good idea,
 	// but so far it works.
         msgPart.setHeader("Content-Type", src.getContentType());
-        msgPart.setHeader("Content-ID", attachement.getName());
+        msgPart.setHeader("Content-ID", attachment.getName());
         msgPart.setDisposition(Part.ATTACHMENT);
       }
       catch (MessagingException e) {
-        getLog().error("Could not create attachement from file \""+attachement.getName() +"\"");
+        getLog().error("Could not create attachment from file \""+attachment.getName() +"\"");
         throw new MojoExecutionException("Cought MessagingException",e);
       }
       try {
         parent.addBodyPart(msgPart);
       }
       catch (MessagingException e) {
-        getLog().error("Could not attach \""+attachement.getName() +"\" to message");
+        getLog().error("Could not attach \""+attachment.getName() +"\" to message");
         throw new MojoExecutionException("Cought MessagingException",e);
       }
     }
@@ -289,12 +289,12 @@ extends AbstractMojo
         getLog().error("Could not attach body to MultipartMessage"); 
         throw new MojoExecutionException("Cought MessagingException: ",e);
       }
-      if ( attachements != null ) {
+      if ( attachments != null ) {
         getLog().info("Attaching...");
         this.addAttachements(multipart);
       }
       else {
-        getLog().info("No attachements");
+        getLog().info("No attachments");
       }
 
       try {
