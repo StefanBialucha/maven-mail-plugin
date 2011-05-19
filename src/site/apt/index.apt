@@ -11,13 +11,7 @@ mail-maven-plugin
 
   The mail plugin for Maven 2 allows mails to be sent on the completion of the different {{{http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Build_Lifecycle_Basics}build phases of Maven 2}}.
 
-* Goals Overview
-
-  General information about the goals.
-
-  * {{{<goal>.html}prefix:goal}} short description for this plugin goal.
-
-  * {{{./plugin-info.html} Goals}}
+  Please keep in mind that this plugin is still under developement, so please use the {{{issue-tracking.html}issue tracker}} for suggestions, feature request and of course bugs.
 
 * Features
 
@@ -45,11 +39,12 @@ mail-maven-plugin
   {{{source-repository.html}source repository}} and will find supplementary information in the
   {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}. 
 
-* Examples
+Todo
 
-  To provide you with better understanding of some usages of the Plugin Name,
-  you can take a look into the following examples:
+    * TLS and SMTP-Auth
 
-  * {{{examples/example-one.html}Example Description One}}
+    * Better usage scenarios
 
-  * {{{examples/example-two.html}Example Description Two}}
+    * Anything else I have forgotten ;)
+
+    * Examples

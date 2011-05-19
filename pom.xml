@@ -17,6 +17,10 @@
     <developerConnection>scm:git:ssh://git@github.com:mwmahlberg/maven-mail-plugin.git</developerConnection>
     <url>https://github.com/mwmahlberg/maven-mail-plugin</url>
   </scm>
+  <issueManagement>
+    <system>github.com</system>
+    <url>https://github.com/mwmahlberg/maven-mail-plugin/issues</url>
+  </issueManagement>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -24,6 +28,16 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <organization>
+    <name>Markus W Mahlberg</name>
+    <url>http://mwmahlberg.github.com</url>
+  </organization>
+  <developers>
+    <developer>
+      <name>Markus W Mahlberg</name>
+      <email>markus@mahlberg-online.net</email>
+    </developer>
+  </developers>
   <repositories>
     <repository>
       <id>maven2-repository.java.net</id>

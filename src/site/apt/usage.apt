@@ -1,0 +1,53 @@
+ ------
+ Introduction
+ ------
+ Markus W Mahlberg 
+ ------
+ 2011-05-08
+ ------
+
+
+Usage
+
+    Using the maven-mail-plugin should be quite straight-forward: tell the
+plugin which mailserver to use, who the mail is from, add some recipients of
+any type, add the actual message and attach some files.
+
+    There should be nothing surprising, except the fact that neither
+{{{http://en.wikipedia.org/wiki/Transport_Layer_Security}TLS}} nor
+{{{http://en.wikipedia.org/wiki/SMTP_Authentication}SMTP Authentication}} is
+implemented yet. 
+
++--
+<project>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>maven-mail-plugin</artifactId>
+        <configuration>
+          <smtphost>localhost</smtphost> 
+          <from>maven@localhost</from>
+          <recipients>
+            <recipient>a@localhost</recipient>
+            <recipient>b@localhost</recipient>
+          </recipients>
+          <ccRecipients>
+            <ccRecipient>c@localhost</ccRecipient>
+            <ccRecipient>d@localhost</ccRecipient>
+          </ccRecipients>
+          <bccRecipients>
+            <bccRecipient>e@localhost</bccRecipient>
+            <bccRecipient>f@localhost</bccRecipient>
+          </bccRecipients>
+          <subject>Unittests</subject>
+          <body>test</body>
+	  <attachments>
+	    <attachments>${basedir}/pom.xml</attachments>
+	  </attachments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
++--

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs xmlns="http://maven.apache.org/FML/1.0.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+  title="Frequently Asked Questions"
+  toplink="false">
+  <part id="general">
+    <title>General</title>
+    <faq id="why">
+      <question>Do we need another maven-mail-plugin?</question>
+      <answer>
+        <p>The writing of this plugin was started as a project to learn more about Maven and for personal use.</p>
+        <p>After a while I thought it might be handy for other people as well.</p>
+        <p>So basically it is your choice. ;)</p>
+      </answer>
+    </faq>
+  </part>
+  <part id="features">
+    <title>Features</title>
+    <faq id="recurse">
+      <question>Why can't directories be attached?</question>
+      <answer>
+        <p>Think of it. Would you really want to get mail with a couple of dozen attachments?</p>
+        <p>If you <i>really</i> need to send whole directories, you should have a look at the excellent <a hre="http://maven.apache.org/plugins/maven-assembly-plugin/">Maven Assembly Plugin</a> and send the generated (and compressed) assemblies.</p>
+      </answer>
+    </faq>
+    <faq id="htmlmessages">
+      <question>Why is the mimetype for the body hardcoded as "text/plain"? <i>or</i>
+      Why can't I send fancy HTML bodies?</question>
+      <answer>
+        <p>Short answer: an HTML body holds few if any any additional info compared to a plain text mail. But it at least doubles the size of an e-mail.</p>
+        <p>Long answer: Please see George Dillon's excellent articles <a href="http://www.georgedillon.com/web/html_email_is_evil.shtml"><i>"7 reasons why HTML e-mail is EVIL!!!"</i></a> and <a href="http://www.georgedillon.com/web/html_email_is_evil_still.shtml"><i>"HTML e-mail is STILL evil!!!"</i></a></p> 
+      </answer>
+    </faq>
+    <faq id="htmlimplement">
+      <question>Will you implement multipart/alternative messages?</question>
+      <answer>
+        <p>Short answer: No, see above.</p>
+        <p>Long answer: It is not very likely. But one of the major goals of this project is to give back to the community. If someone comes up with a good reason, I'll propably do it.</p>
+      </answer>
+    </faq>
+  </part>
+</faqs>
