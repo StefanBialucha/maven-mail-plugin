@@ -1,26 +1,37 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>maven-mail-plugin</artifactId>
+
   <!--  <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-sandbox-parent</artifactId>
     <version>9</version>
   </parent>-->
+
   <packaging>maven-plugin</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>maven-mail-plugin Maven Mojo</name>
   <url>http://mwmahlberg.github.com/maven-mail-plugin/</url>
+
+  <project>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
   <scm>
     <connection>scm:git:git://github.com/mwmahlberg/maven-mail-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:mwmahlberg/maven-mail-plugin.git</developerConnection>
     <url>https://github.com/mwmahlberg/maven-mail-plugin</url>
   </scm>
+
   <issueManagement>
     <system>github.com</system>
     <url>https://github.com/mwmahlberg/maven-mail-plugin/issues</url>
   </issueManagement>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -28,10 +39,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <organization>
     <name>Markus W Mahlberg</name>
     <url>http://mwmahlberg.github.com</url>
   </organization>
+
   <developers>
     <developer>
       <name>Markus W Mahlberg</name>
@@ -39,6 +52,7 @@
     </developer>
   </developers>
   <repositories>
+
     <repository>
       <id>maven2-repository.java.net</id>
       <name>Java.net Repository for Maven</name>
@@ -46,12 +60,14 @@
       <layout>default</layout>
     </repository>
   </repositories>
+
   <distributionManagement>
     <site>
       <id>github-project-site</id>
       <url>gitsite:git@github.com/mwmahlberg/maven-mail-plugin.git</url>
     </site>
   </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>

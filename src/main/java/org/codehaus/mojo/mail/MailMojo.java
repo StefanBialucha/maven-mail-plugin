@@ -245,94 +245,83 @@ extends AbstractMojo
     }
   }
 
-  public void execute()
-    throws MojoExecutionException
-    {
+    public void execute() throws MojoExecutionException {
 
-      Properties props = new Properties();
-      getLog().debug("Sending Mail via: "+smtphost);
-      props.put("mail.smtp.host",smtphost);
-      props.put("mail.smtp.port",smtpport);
-      props.put("mail.smtp.starttls.enable","true");
-      
-      Session s = Session.getInstance(props,null);
-      message = new MimeMessage(s);
+        Properties props = new Properties();
+        getLog().debug("Sending Mail via: " + smtphost);
+        props.put("mail.smtp.host", smtphost);
+        props.put("mail.smtp.port", smtpport);
+        props.put("mail.smtp.starttls.enable", "true");
 
-      try {
-        message.setFrom( new InternetAddress(from) );
-      }
-      catch ( Exception e) {
-        // We should inform the user as cleanly as possible about the exception
-        getLog().error("Could not set " + from + " as FromAddress");
+        Session s = Session.getInstance(props, null);
+        message = new MimeMessage(s);
 
-        if (e instanceof AddressException) {
-          throw new MojoExecutionException( "Cought AddressException!",e);
+        try {
+            message.setFrom(new InternetAddress(from));
+        } catch (AddressException e) {
+            throw new MojoExecutionException("Cought AddressException!", e);
+        } catch (MessagingException e) {
+            throw new MojoExecutionException("Cought MessagingException!", e);
+        } catch (Exception e) {
+            getLog().error("Could not set " + from + " as FromAddress");
+            throw new MojoExecutionException(
+                    "Something is SERIOUSLY going wrong: ", e);
         }
-        else if (e instanceof MessagingException) {
-          throw new MojoExecutionException( "Cought MessagingException!",e);
+
+        if (recipients == null) {
+            throw new MojoExecutionException(
+                    "There must be at last one recipient");
         }
-        else {
-          throw new MojoExecutionException( "Something is SERIOUSLY going wrong: ",e );
+
+        getLog().info("Preparing mail from " + from + " via " + smtphost);
+
+        this.addRecipients(recipients, RecipientType.TO);
+
+        if (ccRecipients != null) {
+            this.addRecipients(ccRecipients, RecipientType.CC);
         }
-      }
 
-      if (recipients == null){
-        throw new MojoExecutionException("There must be at last one recipient");
-      }
+        if (bccRecipients != null) {
+            this.addRecipients(bccRecipients, RecipientType.BCC);
+        }
 
-      getLog().info("Preparing mail from " + from + " via " + smtphost);
+        BodyPart msgBodyPart = new MimeBodyPart();
+        try {
+            msgBodyPart.setContent(body, "text/plain; charset=utf-8");
+            msgBodyPart.setDisposition(Part.INLINE);
+        } catch (MessagingException e) {
+            getLog().error("Could not set body to \"" + body + "\"");
+            throw new MojoExecutionException("Cought MessagingException: ", e);
+        }
 
-      this.addRecipients(recipients,RecipientType.TO);
+        MimeMultipart multipart = new MimeMultipart();
 
-      if (  ccRecipients != null  ) {
-        this.addRecipients(ccRecipients,RecipientType.CC);
-      }
+        try {
+            multipart.addBodyPart(msgBodyPart);
+        } catch (MessagingException e) {
+            getLog().error("Could not attach body to MultipartMessage");
+            throw new MojoExecutionException("Cought MessagingException: ", e);
+        }
+        if (attachments != null) {
+            getLog().info("Attaching...");
+            this.addAttachements(multipart);
+        } else {
+            getLog().info("No attachments");
+        }
 
-      if (  bccRecipients !=null ) {
-        this.addRecipients(bccRecipients,RecipientType.BCC);
-      }
-
-      BodyPart msgBodyPart = new MimeBodyPart();
-      try {
-        msgBodyPart.setContent(body,"text/plain; charset=utf-8");
-        msgBodyPart.setDisposition(Part.INLINE);
-      }
-      catch (MessagingException e) {
-        getLog().error("Could not set body to \"" + body +"\"");
-        throw new MojoExecutionException("Cought MessagingException: ",e);
-      }
-
-      MimeMultipart multipart = new MimeMultipart();
-
-      try {
-        multipart.addBodyPart(msgBodyPart);
-      }
-      catch (MessagingException e) {
-        getLog().error("Could not attach body to MultipartMessage"); 
-        throw new MojoExecutionException("Cought MessagingException: ",e);
-      }
-      if ( attachments != null ) {
-        getLog().info("Attaching...");
-        this.addAttachements(multipart);
-      }
-      else {
-        getLog().info("No attachments");
-      }
-
-      try {
-        message.setSubject(subject,"UTF-8");
-        message.setHeader("Content-Transfer-Encoding", "8bit");
-        message.setContent(multipart);
-        getLog().info("Mail sucessfully sent");
-	if (smtpuser != null && smtppassword != null) {
-		Transport transport = s.getTransport("smtp");
-		transport.connect(smtpuser,smtppassword);
-	}
-        Transport.send(message);
-      }
-      catch(MessagingException e) {
-        getLog().info("Cought MessagingException: "+ e.toString());
-        throw new MojoExecutionException( e.toString() );
-      }
+        try {
+            message.setSubject(subject, "UTF-8");
+            message.setHeader("Content-Transfer-Encoding", "8bit");
+            message.setContent(multipart);
+            getLog().info("Mail sucessfully sent");
+            if (smtpuser != null && smtppassword != null) {
+                Transport transport = s.getTransport("smtp");
+                transport.connect(smtpuser, smtppassword);
+            }
+            Transport.send(message);
+        } catch (MessagingException e) {
+            getLog().info("Cought MessagingException: " + e.toString());
+            throw new MojoExecutionException(e.toString());
+        }
     }
 }
