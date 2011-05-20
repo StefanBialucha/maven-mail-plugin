@@ -6,6 +6,7 @@
         <artifactId>maven-mail-plugin</artifactId>
         <configuration>
           <smtphost>localhost</smtphost> 
+          <smtpport>25</smtpport>
           <subject>Unittests</subject>
           <recipients>
             <recipient>a@localhost</recipient>

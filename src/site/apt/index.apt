@@ -19,6 +19,8 @@ mail-maven-plugin
 
   * Attach arbitrary files to the mail
 
+  * support for TLS(not thoroughly tested) and SMTP-Auth 
+
 * Usage
 
   General instructions on how to use the Plugin Name can be found on the {{{usage.html}usage page}}. Some more
@@ -40,8 +42,6 @@ mail-maven-plugin
   {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}. 
 
 Todo
-
-    * TLS and SMTP-Auth
 
     * Better usage scenarios
 

@@ -13,10 +13,9 @@ Usage
 plugin which mailserver to use, who the mail is from, add some recipients of
 any type, add the actual message and attach some files.
 
-    There should be nothing surprising, except the fact that neither
-{{{http://en.wikipedia.org/wiki/Transport_Layer_Security}TLS}} nor
-{{{http://en.wikipedia.org/wiki/SMTP_Authentication}SMTP Authentication}} is
-implemented yet. 
+    Support for TLS is activated by default, but not thoroughly tested.
+Support for SMTP-Auth is implemented but will only be activated in case both
+<<<smtpuser>>> and <<<smtppassword>>> are present.
 
 +--
 <project>
@@ -27,6 +26,9 @@ implemented yet.
         <artifactId>maven-mail-plugin</artifactId>
         <configuration>
           <smtphost>localhost</smtphost> 
+          <smtpport>25</smtpport>
+          <smtpuser>foo</smtpuser>
+          <smtppassword>foo</smtppassword>
           <from>maven@localhost</from>
           <recipients>
             <recipient>a@localhost</recipient>

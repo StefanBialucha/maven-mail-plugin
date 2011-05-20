@@ -137,6 +137,25 @@ extends AbstractMojo
    */
   private String smtphost;
 
+  /**
+   * SMTP Port
+   * The port which will be used to connect to the SMTP server
+   * @parameter expression="${mail.smtp.port}" default-value="25"
+   */
+  private Integer smtpport;
+
+  /**
+   * SMTP User
+   * @parameter expression="${mail.smtp.user}"
+   */
+  private String smtpuser; 
+
+  /**
+   * SMTP Password 
+   * @parameter expression="${mail.smtp.user}"
+   */
+  private String smtppassword;
+
   private MimeMessage message;
 
   public static Map<String, String> propsToMap(Properties props) {
@@ -233,6 +252,9 @@ extends AbstractMojo
       Properties props = new Properties();
       getLog().debug("Sending Mail via: "+smtphost);
       props.put("mail.smtp.host",smtphost);
+      props.put("mail.smtp.port",smtpport);
+      props.put("mail.smtp.starttls.enable","true");
+      
       Session s = Session.getInstance(props,null);
       message = new MimeMessage(s);
 
@@ -302,6 +324,10 @@ extends AbstractMojo
         message.setHeader("Content-Transfer-Encoding", "8bit");
         message.setContent(multipart);
         getLog().info("Mail sucessfully sent");
+	if (smtpuser != null && smtppassword != null) {
+		Transport transport = s.getTransport("smtp");
+		transport.connect(smtpuser,smtppassword);
+	}
         Transport.send(message);
       }
       catch(MessagingException e) {
