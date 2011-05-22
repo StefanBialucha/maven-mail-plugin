@@ -13,10 +13,12 @@
   <version>1.0-SNAPSHOT</version>
   <name>maven-mail-plugin Maven Mojo</name>
   <url>http://mwmahlberg.github.com/maven-mail-plugin/</url>
+
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
   <scm>
     <connection>scm:git:git://github.com/mwmahlberg/maven-mail-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:mwmahlberg/maven-mail-plugin.git</developerConnection>
