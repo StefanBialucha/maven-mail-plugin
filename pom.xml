@@ -1,37 +1,31 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>maven-mail-plugin</artifactId>
-
+  <inceptionYear>2011</inceptionYear>
   <!--  <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-sandbox-parent</artifactId>
     <version>9</version>
   </parent>-->
-
   <packaging>maven-plugin</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>maven-mail-plugin Maven Mojo</name>
   <url>http://mwmahlberg.github.com/maven-mail-plugin/</url>
-
-  <project>
+  <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
   <scm>
     <connection>scm:git:git://github.com/mwmahlberg/maven-mail-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:mwmahlberg/maven-mail-plugin.git</developerConnection>
     <url>https://github.com/mwmahlberg/maven-mail-plugin</url>
   </scm>
-
   <issueManagement>
     <system>github.com</system>
     <url>https://github.com/mwmahlberg/maven-mail-plugin/issues</url>
   </issueManagement>
-
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -39,12 +33,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <organization>
     <name>Markus W Mahlberg</name>
     <url>http://mwmahlberg.github.com</url>
   </organization>
-
   <developers>
     <developer>
       <name>Markus W Mahlberg</name>
@@ -52,7 +44,6 @@
     </developer>
   </developers>
   <repositories>
-
     <repository>
       <id>maven2-repository.java.net</id>
       <name>Java.net Repository for Maven</name>
@@ -60,14 +51,12 @@
       <layout>default</layout>
     </repository>
   </repositories>
-
   <distributionManagement>
     <site>
       <id>github-project-site</id>
       <url>gitsite:git@github.com/mwmahlberg/maven-mail-plugin.git</url>
     </site>
   </distributionManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -75,15 +64,14 @@
       <version>2.0</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>1.4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
@@ -96,16 +84,6 @@
       <artifactId>mock-javamail</artifactId>
       <version>1.9</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity</artifactId>
-      <version>1.7</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.2.1</version>
     </dependency>
   </dependencies>
   <build>
@@ -158,6 +136,16 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
         <version>2.7.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.2</version>
       </plugin>
     </plugins>
   </reporting>
