@@ -96,19 +96,19 @@ extends AbstractMojo
    * @parameter
    * @required
    */
-  private List recipients;
+  private List<String> recipients;
 
   /**
    * CC-Adresses
    * @parameter
    */
-  private List ccRecipients;
+  private List<String> ccRecipients;
 
   /**
    * BCC-Adresses
    * @parameter
    */
-  private List bccRecipients;
+  private List<String> bccRecipients;
 
   /**
    * Subject
@@ -127,7 +127,7 @@ extends AbstractMojo
   * Attachements 
   * @parameter 
   */
-  private List attachments;
+  private List<String> attachments;
 
   /**
    * SMTP Host
@@ -157,7 +157,7 @@ extends AbstractMojo
 
   private MimeMessage message;
 
-  public static Map<String, String> propsToMap(Properties props) {
+  private static Map<String, String> propsToMap(Properties props) {
           HashMap<String, String> hmap = new HashMap<String,String>();
           Enumeration<Object> e = props.keys();
           while (e.hasMoreElements()) {
@@ -180,7 +180,7 @@ extends AbstractMojo
 
       while ( iterator.hasNext() ){
         try {
-          message.addRecipient( rt.getType() , new InternetAddress ( iterator.next() ) );
+          message.addRecipient( rt.getType() , new InternetAddress( iterator.next(), true )  );
           getLog().debug("Added "+rt.getType());
         }
         catch ( Exception e ) {
