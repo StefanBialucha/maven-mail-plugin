@@ -16,10 +16,6 @@ package org.codehaus.mojo.mail;
  *  limitations under the License.
  */
 
-/* import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-*/
 import java.io.File;
 import java.util.List;
 import java.util.Iterator;

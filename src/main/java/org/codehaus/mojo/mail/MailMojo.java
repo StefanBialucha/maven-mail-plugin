@@ -18,7 +18,6 @@ package org.codehaus.mojo.mail;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.FileWriter;
