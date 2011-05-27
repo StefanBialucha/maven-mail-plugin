@@ -54,7 +54,7 @@ import javax.mail.internet.MimeMultipart;
  * Goal which sends a mail to recipients 
  *
  * @goal mail 
- * @phase deploy 
+ * @phase deploy
  */
 public class MailMojo 
 extends AbstractMojo
@@ -267,6 +267,7 @@ extends AbstractMojo
                     "Something is SERIOUSLY going wrong: ", e);
         }
 
+        getLog().info("recipients=" + recipients);
         if (recipients == null) {
             throw new MojoExecutionException(
                     "There must be at last one recipient");
@@ -312,12 +313,12 @@ extends AbstractMojo
             message.setSubject(subject, "UTF-8");
             message.setHeader("Content-Transfer-Encoding", "8bit");
             message.setContent(multipart);
-            getLog().info("Mail sucessfully sent");
             if (smtpuser != null && smtppassword != null) {
                 Transport transport = s.getTransport("smtp");
                 transport.connect(smtpuser, smtppassword);
             }
             Transport.send(message);
+            getLog().info("Mail sucessfully sent");
         } catch (MessagingException e) {
             getLog().info("Cought MessagingException: " + e.toString());
             throw new MojoExecutionException(e.toString());
