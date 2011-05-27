@@ -79,7 +79,7 @@ public class MailMojo extends AbstractMojo {
     private String from;
 
     /**
-     * To-Adresses
+     * To-addresses
      * 
      * @parameter
      * @required
@@ -87,14 +87,14 @@ public class MailMojo extends AbstractMojo {
     private List<String> recipients;
 
     /**
-     * CC-Adresses
+     * CC-addresses
      * 
      * @parameter
      */
     private List<String> ccRecipients;
 
     /**
-     * BCC-Adresses
+     * BCC-addresses
      * 
      * @parameter
      */
@@ -118,7 +118,7 @@ public class MailMojo extends AbstractMojo {
     private String body;
 
     /**
-     * Attachements
+     * attachments
      * 
      * @parameter
      */
