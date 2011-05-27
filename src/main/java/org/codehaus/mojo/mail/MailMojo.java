@@ -198,27 +198,8 @@ public class MailMojo extends AbstractMojo {
 
             getLog().info("\t...\"" + attachment.getPath() + "\"");
 
-            DataSource src = new FileDataSource(attachment);
-            BodyPart msgPart = new MimeBodyPart();
             try {
-                msgPart.setDataHandler(new DataHandler(src));
-                msgPart.setFileName(attachment.getName());
-
-                // Don't know whether using FileDataSource.getContentType() is
-                // really a good idea,
-                // but so far it works.
-                msgPart.setHeader("Content-Type", src.getContentType());
-                msgPart.setHeader("Content-ID", attachment.getName());
-                msgPart.setDisposition(Part.ATTACHMENT);
-            } catch (MessagingException e) {
-                getLog().error(
-                        "Could not create attachment from file \""
-                                + attachment.getName() + "\"");
-                throw new MojoExecutionException("Cought MessagingException", e);
-            }
-
-            try {
-                parent.addBodyPart(msgPart);
+                parent.addBodyPart(addBodyPart(attachment));
             } catch (MessagingException e) {
                 getLog().error(
                         "Could not attach \"" + attachment.getName()
@@ -226,6 +207,28 @@ public class MailMojo extends AbstractMojo {
                 throw new MojoExecutionException("Cought MessagingException", e);
             }
         }
+    }
+
+    private BodyPart addBodyPart(File attachment) throws MojoExecutionException {
+        DataSource src = new FileDataSource(attachment);
+        BodyPart msgPart = new MimeBodyPart();
+        try {
+            msgPart.setDataHandler(new DataHandler(src));
+            msgPart.setFileName(attachment.getName());
+
+            // Don't know whether using FileDataSource.getContentType() is
+            // really a good idea,
+            // but so far it works.
+            msgPart.setHeader("Content-Type", src.getContentType());
+            msgPart.setHeader("Content-ID", attachment.getName());
+            msgPart.setDisposition(Part.ATTACHMENT);
+        } catch (MessagingException e) {
+            getLog().error(
+                    "Could not create attachment from file \""
+                            + attachment.getName() + "\"");
+            throw new MojoExecutionException("Cought MessagingException", e);
+        }
+        return msgPart;
     }
 
     public void execute() throws MojoExecutionException {
