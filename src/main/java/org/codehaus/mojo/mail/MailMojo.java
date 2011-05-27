@@ -274,14 +274,14 @@ extends AbstractMojo
 
         getLog().info("Preparing mail from " + from + " via " + smtphost);
 
-        addRecipients(recipients, RecipientType.TO);
+        addRecipents(recipients, RecipientType.TO);
 
         if (ccRecipients != null) {
-            this.addRecipients(ccRecipients, RecipientType.CC);
+            addRecipents(ccRecipients, RecipientType.CC);
         }
 
         if (bccRecipients != null) {
-            this.addRecipients(bccRecipients, RecipientType.BCC);
+            addRecipents(bccRecipients, RecipientType.BCC);
         }
 
         BodyPart msgBodyPart = new MimeBodyPart();
