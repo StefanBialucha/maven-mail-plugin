@@ -182,18 +182,12 @@ extends AbstractMojo
         try {
           message.addRecipient( rt.getType() , new InternetAddress( iterator.next(), true )  );
           getLog().debug("Added "+rt.getType());
-        }
-        catch ( Exception e ) {
-          getLog().error("Could not set "+rt.getDescription()+"-Address!");
-          if ( e instanceof AddressException) {
-            throw new MojoExecutionException("Reason was an AddressException",e);
-          }
-          else if ( e instanceof MessagingException ) {
+        } catch ( AddressException e) {
+            throw new MojoExecutionException("Reason was an AddressException", e);
+        } catch ( MessagingException e) {
             throw new MojoExecutionException("Reason was a MessagingException",e);
-          }
-          else {
+        } catch ( Exception e ) {
             throw new MojoExecutionException ("Unknown Reason",e);
-          }
         }
       }
     }
