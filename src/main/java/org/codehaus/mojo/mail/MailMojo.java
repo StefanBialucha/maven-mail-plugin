@@ -16,39 +16,28 @@ package org.codehaus.mojo.mail;
  *  limitations under the License.
  */
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-
-import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException; 
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * Goal which sends a mail to recipients 
@@ -56,116 +45,116 @@ import javax.mail.internet.MimeMultipart;
  * @goal mail 
  * @phase deploy
  */
-public class MailMojo 
-extends AbstractMojo
-{
+public class MailMojo extends AbstractMojo {
 
     // Sadly, one can't extend enums, so we have to wrap it ourselves
-    
+
     private enum RecipientType {
-      TO("To",Message.RecipientType.TO),
-      CC("CC",Message.RecipientType.CC),
-      BCC("BCC",Message.RecipientType.BCC);
+        TO("To", Message.RecipientType.TO), 
+        CC("CC", Message.RecipientType.CC), 
+        BCC("BCC", Message.RecipientType.BCC);
 
-      private final String description_;
-      private final Message.RecipientType rectype_;
+        private final String description_;
+        private final Message.RecipientType rectype_;
 
-      private RecipientType(String desc, Message.RecipientType rt) {
-        this.description_ = desc;
-        this.rectype_ = rt;
-      }
+        private RecipientType(String desc, Message.RecipientType rt) {
+            this.description_ = desc;
+            this.rectype_ = rt;
+        }
 
-      String getDescription() {
-        return this.description_;
-      }
-      
-      Message.RecipientType getType() {
-        return this.rectype_;
-      }
-  }
+        String getDescription() {
+            return this.description_;
+        }
 
-  /**
-   * Sender 
-   * @parameter default-value="maven2@localhost"
-   * @required
-   */
-  private String from;
+        Message.RecipientType getType() {
+            return this.rectype_;
+        }
+    }
 
-  /**
-   * To-Adresses
-   * @parameter
-   * @required
-   */
-  private List<String> recipients;
+    /**
+     * Sender
+     * 
+     * @parameter default-value="maven2@localhost"
+     * @required
+     */
+    private String from;
 
-  /**
-   * CC-Adresses
-   * @parameter
-   */
-  private List<String> ccRecipients;
+    /**
+     * To-Adresses
+     * 
+     * @parameter
+     * @required
+     */
+    private List<String> recipients;
 
-  /**
-   * BCC-Adresses
-   * @parameter
-   */
-  private List<String> bccRecipients;
+    /**
+     * CC-Adresses
+     * 
+     * @parameter
+     */
+    private List<String> ccRecipients;
 
-  /**
-   * Subject
-   * @parameter expression="${mail.subject}" default-value="${project.name} deployed"
-   */
-  private String subject;
+    /**
+     * BCC-Adresses
+     * 
+     * @parameter
+     */
+    private List<String> bccRecipients;
 
-  /**
-   * Body
-   * @parameter expression="${mail.body}" default-value="${project.name} was successfully deployed"
-   * @required
-   */
-  private String body;
+    /**
+     * Subject
+     * 
+     * @parameter expression="${mail.subject}"
+     *            default-value="${project.name} deployed"
+     */
+    private String subject;
 
-  /**
-  * Attachements 
-  * @parameter 
-  */
-  private List<String> attachments;
+    /**
+     * Body
+     * 
+     * @parameter expression="${mail.body}"
+     *            default-value="${project.name} was successfully deployed"
+     * @required
+     */
+    private String body;
 
-  /**
-   * SMTP Host
-   * @parameter expression="${mail.smtp.host}" default-value="localhost"
-   * @required
-   */
-  private String smtphost;
+    /**
+     * Attachements
+     * 
+     * @parameter
+     */
+    private List<String> attachments;
 
-  /**
-   * SMTP Port
-   * The port which will be used to connect to the SMTP server
-   * @parameter expression="${mail.smtp.port}" default-value="25"
-   */
-  private Integer smtpport;
+    /**
+     * SMTP Host
+     * 
+     * @parameter expression="${mail.smtp.host}" default-value="localhost"
+     * @required
+     */
+    private String smtphost;
 
-  /**
-   * SMTP User
-   * @parameter expression="${mail.smtp.user}"
-   */
-  private String smtpuser; 
+    /**
+     * SMTP Port The port which will be used to connect to the SMTP server
+     * 
+     * @parameter expression="${mail.smtp.port}" default-value="25"
+     */
+    private Integer smtpport;
 
-  /**
-   * SMTP Password 
-   * @parameter expression="${mail.smtp.user}"
-   */
-  private String smtppassword;
+    /**
+     * SMTP User
+     * 
+     * @parameter expression="${mail.smtp.user}"
+     */
+    private String smtpuser;
 
-  private MimeMessage message;
+    /**
+     * SMTP Password
+     * 
+     * @parameter expression="${mail.smtp.user}"
+     */
+    private String smtppassword;
 
-  private static Map<String, String> propsToMap(Properties props) {
-          HashMap<String, String> hmap = new HashMap<String,String>();
-          Enumeration<Object> e = props.keys();
-          while (e.hasMoreElements()) {
-                  String s = (String)e.nextElement();
-                  hmap.put(s, props.getProperty(s));
-          }
-          return hmap;
-  }
+    private MimeMessage message;
 
     private void addRecipents(List<String> recipients, RecipientType rt)
             throws MojoExecutionException {
@@ -174,13 +163,10 @@ extends AbstractMojo
             return;
         }
 
-        getLog().info(rt.getDescription() + ": " + recipients);
-        Iterator<String> iterator = recipients.iterator();
-
-        while (iterator.hasNext()) {
+        for (String recipient : recipients) {
+            getLog().info(rt.getDescription() + ": " + recipients);
             try {
-                message.addRecipient(rt.getType(),
-                        new InternetAddress(iterator.next(), true));
+                message.addRecipient(rt.getType(), new InternetAddress(recipient, true));
                 getLog().debug("Added " + rt.getType());
             } catch (AddressException e) {
                 throw new MojoExecutionException(
@@ -191,6 +177,7 @@ extends AbstractMojo
             } catch (Exception e) {
                 throw new MojoExecutionException("Unknown Reason", e);
             }
+            
         }
     }
 
@@ -273,6 +260,7 @@ extends AbstractMojo
 
         addRecipents(recipients, RecipientType.TO);
 
+        getLog().info("ccRecipients:" + ccRecipients);
         if (ccRecipients != null) {
             addRecipents(ccRecipients, RecipientType.CC);
         }
