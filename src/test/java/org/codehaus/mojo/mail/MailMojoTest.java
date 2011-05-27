@@ -17,19 +17,14 @@ package org.codehaus.mojo.mail;
  */
 
 import java.io.File;
-import java.util.List;
-import java.util.Iterator;
-import java.util.HashSet;
 import java.util.Arrays;
- 
+import java.util.HashSet;
+import java.util.List;
+
 import javax.mail.Message;
-
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.FileUtils;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase ;
-
-import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
+
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.jvnet.mock_javamail.Mailbox;
 
 public class MailMojoTest

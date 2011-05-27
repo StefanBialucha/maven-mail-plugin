@@ -17,7 +17,6 @@ package org.codehaus.mojo.mail;
  */
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
