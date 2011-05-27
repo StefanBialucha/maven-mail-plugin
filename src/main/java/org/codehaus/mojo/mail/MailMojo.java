@@ -268,10 +268,6 @@ extends AbstractMojo
         }
 
         getLog().info("recipients=" + recipients);
-        if (recipients == null) {
-            throw new MojoExecutionException(
-                    "There must be at last one recipient");
-        }
 
         getLog().info("Preparing mail from " + from + " via " + smtphost);
 
