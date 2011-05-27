@@ -167,76 +167,82 @@ extends AbstractMojo
           return hmap;
   }
 
-  private void addRecipients( List recipients , RecipientType rt ) 
-    throws MojoExecutionException
-    {
+    private void addRecipents(List<String> recipients, RecipientType rt)
+            throws MojoExecutionException {
 
-      if ( recipients == null ) {
-        return;
-      } 
-
-      getLog().info(rt.getDescription() +": "+ recipients);
-      Iterator<String> iterator = recipients.iterator();
-
-      while ( iterator.hasNext() ){
-        try {
-          message.addRecipient( rt.getType() , new InternetAddress( iterator.next(), true )  );
-          getLog().debug("Added "+rt.getType());
-        } catch ( AddressException e) {
-            throw new MojoExecutionException("Reason was an AddressException", e);
-        } catch ( MessagingException e) {
-            throw new MojoExecutionException("Reason was a MessagingException",e);
-        } catch ( Exception e ) {
-            throw new MojoExecutionException ("Unknown Reason",e);
+        if (recipients == null) {
+            return;
         }
-      }
+
+        getLog().info(rt.getDescription() + ": " + recipients);
+        Iterator<String> iterator = recipients.iterator();
+
+        while (iterator.hasNext()) {
+            try {
+                message.addRecipient(rt.getType(),
+                        new InternetAddress(iterator.next(), true));
+                getLog().debug("Added " + rt.getType());
+            } catch (AddressException e) {
+                throw new MojoExecutionException(
+                        "Reason was an AddressException", e);
+            } catch (MessagingException e) {
+                throw new MojoExecutionException(
+                        "Reason was a MessagingException", e);
+            } catch (Exception e) {
+                throw new MojoExecutionException("Unknown Reason", e);
+            }
+        }
     }
 
-  private void addAttachements(MimeMultipart parent) 
-    throws MojoExecutionException {
-    Iterator<String> it = attachments.iterator();
-    DataSource src;
-    BodyPart msgPart;
+    private void addAttachements(MimeMultipart parent)
+            throws MojoExecutionException {
+        Iterator<String> it = attachments.iterator();
 
-    while ( it.hasNext() ){
-      File attachment = new File( it.next() );
+        while (it.hasNext()) {
+            File attachment = new File(it.next());
 
-      getLog().info("\t...\""+ attachment.getPath() +"\"");
+            getLog().info("\t...\"" + attachment.getPath() + "\"");
 
-      /* Traversing directories is not yet implemented 
-       * I strongly doubt that it should be, since this is most likely going to produce 
-       * quite some mailtraffic
-       */
+            /*
+             * Traversing directories is not yet implemented I strongly doubt
+             * that it should be, since this is most likely going to produce
+             * quite some mailtraffic
+             */
 
-      if ( attachment.isDirectory () ) {
-        throw new MojoExecutionException("Attachement can not be a directory (yet)");
-      }
+            if (attachment.isDirectory()) {
+                throw new MojoExecutionException(
+                        "Attachement can not be a directory (yet)");
+            }
 
-      msgPart = new MimeBodyPart();
-      src = new FileDataSource( attachment );
-      try {
-        msgPart.setDataHandler( new DataHandler(src) );
-        msgPart.setFileName( attachment.getName() );
+            DataSource src = new FileDataSource(attachment);
+            BodyPart msgPart = new MimeBodyPart();
+            try {
+                msgPart.setDataHandler(new DataHandler(src));
+                msgPart.setFileName(attachment.getName());
 
-	// Don't know whether using FileDataSource.getContentType() is really a good idea,
-	// but so far it works.
-        msgPart.setHeader("Content-Type", src.getContentType());
-        msgPart.setHeader("Content-ID", attachment.getName());
-        msgPart.setDisposition(Part.ATTACHMENT);
-      }
-      catch (MessagingException e) {
-        getLog().error("Could not create attachment from file \""+attachment.getName() +"\"");
-        throw new MojoExecutionException("Cought MessagingException",e);
-      }
-      try {
-        parent.addBodyPart(msgPart);
-      }
-      catch (MessagingException e) {
-        getLog().error("Could not attach \""+attachment.getName() +"\" to message");
-        throw new MojoExecutionException("Cought MessagingException",e);
-      }
+                // Don't know whether using FileDataSource.getContentType() is
+                // really a good idea,
+                // but so far it works.
+                msgPart.setHeader("Content-Type", src.getContentType());
+                msgPart.setHeader("Content-ID", attachment.getName());
+                msgPart.setDisposition(Part.ATTACHMENT);
+            } catch (MessagingException e) {
+                getLog().error(
+                        "Could not create attachment from file \""
+                                + attachment.getName() + "\"");
+                throw new MojoExecutionException("Cought MessagingException", e);
+            }
+
+            try {
+                parent.addBodyPart(msgPart);
+            } catch (MessagingException e) {
+                getLog().error(
+                        "Could not attach \"" + attachment.getName()
+                                + "\" to message");
+                throw new MojoExecutionException("Cought MessagingException", e);
+            }
+        }
     }
-  }
 
     public void execute() throws MojoExecutionException {
 
@@ -268,7 +274,7 @@ extends AbstractMojo
 
         getLog().info("Preparing mail from " + from + " via " + smtphost);
 
-        this.addRecipients(recipients, RecipientType.TO);
+        addRecipients(recipients, RecipientType.TO);
 
         if (ccRecipients != null) {
             this.addRecipients(ccRecipients, RecipientType.CC);
