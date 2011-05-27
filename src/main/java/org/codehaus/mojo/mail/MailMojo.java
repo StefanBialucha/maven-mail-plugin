@@ -123,7 +123,7 @@ public class MailMojo extends AbstractMojo {
      * 
      * @parameter
      */
-    private List<String> attachments;
+    private List<File> attachments;
 
     /**
      * SMTP Host
@@ -183,23 +183,20 @@ public class MailMojo extends AbstractMojo {
 
     private void addAttachements(MimeMultipart parent)
             throws MojoExecutionException {
-        Iterator<String> it = attachments.iterator();
-
-        while (it.hasNext()) {
-            File attachment = new File(it.next());
-
-            getLog().info("\t...\"" + attachment.getPath() + "\"");
+        
+        for (File attachment : attachments) {
 
             /*
              * Traversing directories is not yet implemented I strongly doubt
              * that it should be, since this is most likely going to produce
              * quite some mailtraffic
              */
-
             if (attachment.isDirectory()) {
                 throw new MojoExecutionException(
-                        "Attachement can not be a directory (yet)");
+                        "The " + attachment.getAbsolutePath() + " is a directory which is not supported (future?)");
             }
+
+            getLog().info("\t...\"" + attachment.getPath() + "\"");
 
             DataSource src = new FileDataSource(attachment);
             BodyPart msgPart = new MimeBodyPart();
