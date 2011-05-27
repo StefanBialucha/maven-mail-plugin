@@ -155,7 +155,7 @@ public class MailMojo extends AbstractMojo {
 
     private MimeMessage message;
 
-    private void addRecipents(List<String> recipients, RecipientType rt)
+    private void addRecipients(List<String> recipients, RecipientType rt)
             throws MojoExecutionException {
 
         if (recipients == null) {
@@ -257,15 +257,15 @@ public class MailMojo extends AbstractMojo {
 
         getLog().info("Preparing mail from " + from + " via " + smtphost);
 
-        addRecipents(recipients, RecipientType.TO);
+        addRecipients(recipients, RecipientType.TO);
 
         getLog().info("ccRecipients:" + ccRecipients);
         if (ccRecipients != null) {
-            addRecipents(ccRecipients, RecipientType.CC);
+            addRecipients(ccRecipients, RecipientType.CC);
         }
 
         if (bccRecipients != null) {
-            addRecipents(bccRecipients, RecipientType.BCC);
+            addRecipients(bccRecipients, RecipientType.BCC);
         }
 
         BodyPart msgBodyPart = new MimeBodyPart();
